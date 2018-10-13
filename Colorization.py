@@ -20,3 +20,4 @@ X = []
 for filename in dirs:
     X.append(img_to_array(load_img(dirs + filename)))
 X = np.array(X, dtype=float)
+
