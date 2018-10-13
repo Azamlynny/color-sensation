@@ -14,9 +14,9 @@ batch_size = 80
 
 # Input Data
 X = []
-for filename in os.listdir('C:/Users/Adam/Desktop/HackUC III/color-sensation/Training/'):
+for filename in os.listdir('../Training/'):
     if filename != '.DS_Store':
-        X.append(img_to_array(load_img('C:/Users/Adam/Desktop/HackUC III/color-sensation/Training/' + filename, target_size=(256, 256))))
+        X.append(img_to_array(load_img('../Training/' + filename, target_size=(256, 256))))
 X = np.array(X, dtype=float)
 X *= 1.0 / 255
 
@@ -60,7 +60,11 @@ model.fit_generator(generateTrain(batch_size), callbacks=[tensorboard], epochs=n
 model.save("model.h5")
 
 # Output some tests
-tests = X
+
+tests = []
+for filename in os.listdir('../Testing/'):
+    if filename != '.DS_Store':
+        tests.append(img_to_array(load_img('../Testing/' + filename, target_size=(256, 256))))
 tests = rgb2lab(tests)[:,:,:,0]
 tests = tests.reshape(tests.shape+(1,))
 
