@@ -1,6 +1,6 @@
 from keras.layers import Conv2D, UpSampling2D, InputLayer, Cropping2D
 from keras.callbacks import TensorBoard
-from keras.models import Sequential
+from keras.models import Sequential, load_model, model_from_json
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
 from skimage.color import rgb2lab, lab2rgb, rgb2gray
 from skimage.io import imsave
@@ -9,7 +9,7 @@ import os
 import tensorflow as tf
 import tensorflowjs as tfjs
 
-num_epochs = 1000
+num_epochs = 1
 batch_size = 25
 
 # Input Data
@@ -37,6 +37,10 @@ model.add(UpSampling2D((2, 2)))
 model.add(Conv2D(2, (3, 3), activation='tanh', padding='same'))
 model.compile(optimizer='rmsprop', loss='mse')
 
+# load weights into model
+model.load_weights("model.h5")
+print("Loaded model from disk")
+
 # Get transformed images for training
 datagen = ImageDataGenerator(
         shear_range=0.2,
@@ -56,8 +60,9 @@ def generateTrain(batch_size):
 tensorboard = TensorBoard()
 model.fit_generator(generateTrain(batch_size), callbacks=[tensorboard], epochs=num_epochs, steps_per_epoch=2)
 
-# Save weights
-model.save("model.h5")
+# Serialize weights to HDF5
+model.save_weights("model.h5")
+print("Saved model to disk")
 
 # Output some tests
 tests = []
