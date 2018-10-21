@@ -9,8 +9,8 @@ import os
 import tensorflow as tf
 import tensorflowjs as tfjs
 
-num_epochs = 100
-batch_size = 80
+num_epochs = 1000
+batch_size = 25
 
 # Input Data
 X = []
@@ -60,12 +60,13 @@ model.fit_generator(generateTrain(batch_size), callbacks=[tensorboard], epochs=n
 model.save("model.h5")
 
 # Output some tests
-
 tests = []
 for filename in os.listdir('../Testing/'):
     if filename != '.DS_Store':
-        tests.append(img_to_array(load_img('../Testing/' + filename, target_size=(256, 256))))
-tests = rgb2lab(tests)[:,:,:,0]
+        tests.append(img_to_array(load_img('../Testing/' + filename, target_size=(256, 256)), dtype='int'))
+for i in range(len(tests)):
+        tests[i] =  1.0 / 255.0 * tests[i]
+tests = rgb2lab(tests)[:,:,:,0] 
 tests = tests.reshape(tests.shape+(1,))
 
 output = model.predict(tests)
@@ -73,7 +74,7 @@ output *= 128
 
 # Combine the outputs with the original to form a colored image
 for i in range(len(output)):
-	cur = np.zeros((256, 256, 4))
+	cur = np.zeros((256, 256, 3))
 	cur[:,:,0] = tests[i][:,:,0]
 	cur[:,:,1:] = output[i]
 	imsave(str(i) + ".png", lab2rgb(cur))
